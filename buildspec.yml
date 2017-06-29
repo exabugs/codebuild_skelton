@@ -1,0 +1,34 @@
+version: 0.1
+
+environment_variables:
+  plaintext:
+    AWS_ACCOUNT_ID: "663889673734"
+    IMAGE_REPO_NAME: "codebuild_skelton"
+    IMAGE_TAG: "20170629"
+
+phases:
+  install:
+    commands:
+      - curl
+       -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
+       -o /usr/local/bin/docker-compose
+       && chmod +x /usr/local/bin/docker-compose
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - echo AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
+      - echo IMAGE_REPO_NAME $IMAGE_REPO_NAME
+      - echo IMAGE_TAG $IMAGE_TAG
+      - echo AWS_ACCOUNT_ID $AWS_ACCOUNT_ID
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker-compose build
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
