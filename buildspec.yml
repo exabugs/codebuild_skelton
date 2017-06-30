@@ -5,6 +5,7 @@ environment_variables:
     AWS_ACCOUNT_ID: "663889673734"
     IMAGE_REPO_NAME: "codebuildskelton_terminal"
     IMAGE_TAG: "20170629"
+    LOCAL_NAME: "src_terminal"
 
 phases:
   install:
@@ -27,7 +28,7 @@ phases:
       - echo Building the Docker image...
       - docker-compose build
       - docker images
-      - docker tag $IMAGE_REPO_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker tag $LOCAL_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
